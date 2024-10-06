@@ -1,0 +1,223 @@
+camper: /project$ psql --username=freecodecamp --dbname=postgres
+Border style is 2.
+Pager usage is off.
+psql (12.17 (Ubuntu 12.17-1.pgdg22.04+1))
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+postgres=> CREATE DATABASE universe;
+CREATE DATABASE
+postgres=> \c universe;
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+You are now connected to database "universe" as user "freecodecamp".
+universe=> CREATE TABLE galaxy (
+universe(>     galaxy_id SERIAL PRIMARY KEY,      -- Auto-incrementing primary key
+universe(>     name VARCHAR(255) UNIQUE NOT NULL, -- Unique name, cannot be NULL
+universe(>     galaxy_type VARCHAR(100) NOT NULL, -- Type of galaxy
+universe(>     age_in_millions_of_years INT NOT NULL, -- Age in millions of years
+universe(>     has_life BOOLEAN NOT NULL          -- Boolean indicating whether the galaxy contains life
+universe(> );
+CREATE TABLE
+universe=> CREATE TABLE star (
+universe(>     star_id SERIAL PRIMARY KEY,        -- Auto-incrementing primary key
+universe(>     name VARCHAR(255) UNIQUE NOT NULL, -- Unique name, cannot be NULL
+universe(>     star_type VARCHAR(100) NOT NULL,   -- Type of star
+universe(>     galaxy_id INT REFERENCES galaxy(galaxy_id) NOT NULL, -- Foreign key referencing galaxy
+universe(>     distance_from_earth NUMERIC NOT NULL, -- Distance from Earth in light-years (NUMERIC type)
+universe(>     is_spherical BOOLEAN NOT NULL      -- Boolean to indicate if the star is spherical
+universe(> );
+CREATE TABLE
+universe=> CREATE TABLE planet (
+universe(>     planet_id SERIAL PRIMARY KEY,      -- Auto-incrementing primary key
+universe(>     name VARCHAR(255) UNIQUE NOT NULL, -- Unique name, cannot be NULL
+universe(>     planet_type VARCHAR(100) NOT NULL, -- Type of planet
+universe(>     star_id INT REFERENCES star(star_id) NOT NULL, -- Foreign key referencing star
+universe(>     distance_from_star INT NOT NULL,   -- Distance from the star in some units
+universe(>     has_life BOOLEAN NOT NULL          -- Boolean indicating whether the planet has life
+universe(> );
+CREATE TABLE
+universe=> CREATE TABLE moon (
+universe(>     moon_id SERIAL PRIMARY KEY,        -- Auto-incrementing primary key
+universe(>     name VARCHAR(255) UNIQUE NOT NULL, -- Unique name, cannot be NULL
+universe(>     planet_id INT REFERENCES planet(planet_id) NOT NULL, -- Foreign key referencing planet
+universe(>     diameter INT NOT NULL,             -- Diameter of the moon in kilometers
+universe(>     has_water BOOLEAN NOT NULL         -- Boolean indicating whether the moon has water
+universe(> );
+CREATE TABLE
+universe=> CREATE TABLE asteroid_belt (
+universe(>     belt_id SERIAL PRIMARY KEY,        -- Auto-incrementing primary key
+universe(>     name VARCHAR(255) UNIQUE NOT NULL, -- Unique name, cannot be NULL
+universe(>     star_id INT REFERENCES star(star_id) NOT NULL, -- Foreign key referencing star
+universe(>     total_mass NUMERIC NOT NULL,       -- Total mass of the asteroid belt (NUMERIC type)
+universe(>     is_spherical BOOLEAN NOT NULL      -- Boolean indicating if the belt is spherical
+universe(> );
+CREATE TABLE
+universe=> INSERT INTO galaxy (name, galaxy_type, age_in_millions_of_years, has_life) VALUES
+universe-> ('Milky Way', 'Spiral', 13500, TRUE),
+universe-> ('Andromeda', 'Spiral', 10000, FALSE),
+universe-> ('Sombrero', 'Elliptical', 8000, FALSE),
+universe-> ('Whirlpool', 'Spiral', 12000, TRUE),
+universe-> ('Pinwheel', 'Spiral', 14000, FALSE),
+universe-> ('Messier 87', 'Elliptical', 11000, FALSE);
+INSERT 0 6
+universe=> INSERT INTO star (name, star_type, galaxy_id, distance_from_earth, is_spherical) VALUES
+universe-> ('Sun', 'G-type', 1, 0.0000158, TRUE),
+universe-> ('Proxima Centauri', 'Red Dwarf', 2, 4.24, TRUE),
+universe-> ('Sirius', 'A-type', 1, 8.6, TRUE),
+universe-> ('Vega', 'A-type', 4, 25, TRUE),
+universe-> ('Betelgeuse', 'Red Supergiant', 5, 642.5, TRUE),
+universe-> ('Rigel', 'Blue Supergiant', 6, 864.3, TRUE);
+INSERT 0 6
+universe=> INSERT INTO planet (name, planet_type, star_id, distance_from_star, has_life) VALUES
+universe-> ('Earth', 'Terrestrial', 1, 93, TRUE),
+universe-> ('Mars', 'Terrestrial', 1, 141, FALSE),
+universe-> ('Venus', 'Terrestrial', 1, 67, FALSE),
+universe-> ('Proxima b', 'Terrestrial', 2, 4, FALSE),
+universe-> ('Sirius b', 'White Dwarf', 3, 8, FALSE),
+universe-> ('Vega b', 'Terrestrial', 4, 24, FALSE),
+universe-> ('Betel b', 'Gas Giant', 5, 800, FALSE),
+universe-> ('Rigel b', 'Gas Giant', 6, 900, FALSE),
+universe-> ('Proxima c', 'Terrestrial', 2, 5, FALSE),
+universe-> ('Earth II', 'Terrestrial', 1, 100, TRUE),
+universe-> ('Mars II', 'Terrestrial', 1, 120, FALSE),
+universe-> ('Venus II', 'Terrestrial', 1, 70, FALSE);
+INSERT 0 12
+universe=> INSERT INTO moon (name, planet_id, diameter, has_water) VALUES
+universe-> ('Moon', 1, 3474, FALSE),
+universe-> ('Phobos', 2, 22, FALSE),
+universe-> ('Deimos', 2, 12, FALSE),
+universe-> ('Europa', 4, 3121, TRUE),
+universe-> ('Ganymede', 4, 5262, TRUE),
+universe-> ('Callisto', 4, 4821, TRUE),
+universe-> ('Titan', 8, 5150, TRUE),
+universe-> ('Enceladus', 8, 504, TRUE),
+universe-> ('Triton', 9, 2706, FALSE),
+universe-> ('Titania', 10, 1578, FALSE),
+universe-> ('Oberon', 10, 1523, FALSE),
+universe-> ('Rhea', 8, 1528, TRUE),
+universe-> ('Iapetus', 8, 1469, FALSE),
+universe-> ('Hyperion', 8, 270, FALSE),
+universe-> ('Dione', 8, 1123, TRUE),
+universe-> ('Miranda', 9, 471, FALSE),
+universe-> ('Ariel', 9, 1158, TRUE),
+universe-> ('Umbriel', 10, 1172, FALSE),
+universe-> ('Mimas', 11, 396, FALSE),
+universe-> ('Thebe', 12, 200, FALSE);
+INSERT 0 20
+universe=> INSERT INTO asteroid_belt (name, star_id, total_mass, is_spherical) VALUES
+universe-> ('Main Belt', 1, 3.0, FALSE),
+universe-> ('Kuiper Belt', 1, 4.5, FALSE),
+universe-> ('Asteroid Belt 1', 2, 1.2, FALSE);
+INSERT 0 3
+universe=> \dt
+                List of relations
++--------+---------------+-------+--------------+
+| Schema |     Name      | Type  |    Owner     |
++--------+---------------+-------+--------------+
+| public | asteroid_belt | table | freecodecamp |
+| public | galaxy        | table | freecodecamp |
+| public | moon          | table | freecodecamp |
+| public | planet        | table | freecodecamp |
+| public | star          | table | freecodecamp |
++--------+---------------+-------+--------------+
+(5 rows)
+
+universe=> ALTER TABLE moon ADD COLUMN types TEXT;
+ALTER TABLE
+universe=> \d galaxy
+lt
+                                                 Table "public.galaxy"
++--------------------------+------------------------+-----------+----------+-------------------------------------------+
+|          Column          |          Type          | Collation | Nullable |                  Default                  |
++--------------------------+------------------------+-----------+----------+-------------------------------------------+
+| galaxy_id                | integer                |           | not null | nextval('galaxy_galaxy_id_seq'::regclass) |
+| name                     | character varying(255) |           | not null |                                           |
+| galaxy_type              | character varying(100) |           | not null |                                           |
+| age_in_millions_of_years | integer                |           | not null |                                           |
+| has_life                 | boolean                |           | not null |                                           |
++--------------------------+------------------------+-----------+----------+-------------------------------------------+
+Indexes:
+    "galaxy_pkey" PRIMARY KEY, btree (galaxy_id)
+    "galaxy_name_key" UNIQUE CONSTRAINT, btree (name)
+Referenced by:
+    TABLE "star" CONSTRAINT "star_galaxy_id_fkey" FOREIGN KEY (galaxy_id) REFERENCES galaxy(galaxy_id)
+
+universe=> \d star
+                                              Table "public.star"
++---------------------+------------------------+-----------+----------+---------------------------------------+
+|       Column        |          Type          | Collation | Nullable |                Default                |
++---------------------+------------------------+-----------+----------+---------------------------------------+
+| star_id             | integer                |           | not null | nextval('star_star_id_seq'::regclass) |
+| name                | character varying(255) |           | not null |                                       |
+| star_type           | character varying(100) |           | not null |                                       |
+| galaxy_id           | integer                |           | not null |                                       |
+| distance_from_earth | numeric                |           | not null |                                       |
+| is_spherical        | boolean                |           | not null |                                       |
++---------------------+------------------------+-----------+----------+---------------------------------------+
+Indexes:
+    "star_pkey" PRIMARY KEY, btree (star_id)
+    "star_name_key" UNIQUE CONSTRAINT, btree (name)
+Foreign-key constraints:
+    "star_galaxy_id_fkey" FOREIGN KEY (galaxy_id) REFERENCES galaxy(galaxy_id)
+Referenced by:
+    TABLE "asteroid_belt" CONSTRAINT "asteroid_belt_star_id_fkey" FOREIGN KEY (star_id) REFERENCES star(star_id)
+    TABLE "planet" CONSTRAINT "planet_star_id_fkey" FOREIGN KEY (star_id) REFERENCES star(star_id)
+
+universe=> \d planet
+                                              Table "public.planet"
++--------------------+------------------------+-----------+----------+-------------------------------------------+
+|       Column       |          Type          | Collation | Nullable |                  Default                  |
++--------------------+------------------------+-----------+----------+-------------------------------------------+
+| planet_id          | integer                |           | not null | nextval('planet_planet_id_seq'::regclass) |
+| name               | character varying(255) |           | not null |                                           |
+| planet_type        | character varying(100) |           | not null |                                           |
+| star_id            | integer                |           | not null |                                           |
+| distance_from_star | integer                |           | not null |                                           |
+| has_life           | boolean                |           | not null |                                           |
++--------------------+------------------------+-----------+----------+-------------------------------------------+
+Indexes:
+    "planet_pkey" PRIMARY KEY, btree (planet_id)
+    "planet_name_key" UNIQUE CONSTRAINT, btree (name)
+Foreign-key constraints:
+    "planet_star_id_fkey" FOREIGN KEY (star_id) REFERENCES star(star_id)
+Referenced by:
+    TABLE "moon" CONSTRAINT "moon_planet_id_fkey" FOREIGN KEY (planet_id) REFERENCES planet(planet_id)
+
+universe=> \d moon
+                                         Table "public.moon"
++-----------+------------------------+-----------+----------+---------------------------------------+
+|  Column   |          Type          | Collation | Nullable |                Default                |
++-----------+------------------------+-----------+----------+---------------------------------------+
+| moon_id   | integer                |           | not null | nextval('moon_moon_id_seq'::regclass) |
+| name      | character varying(255) |           | not null |                                       |
+| planet_id | integer                |           | not null |                                       |
+| diameter  | integer                |           | not null |                                       |
+| has_water | boolean                |           | not null |                                       |
+| types     | text                   |           |          |                                       |
++-----------+------------------------+-----------+----------+---------------------------------------+
+Indexes:
+    "moon_pkey" PRIMARY KEY, btree (moon_id)
+    "moon_name_key" UNIQUE CONSTRAINT, btree (name)
+Foreign-key constraints:
+    "moon_planet_id_fkey" FOREIGN KEY (planet_id) REFERENCES planet(planet_id)
+
+universe=> \d asteroid_belt
+                                          Table "public.asteroid_belt"
++--------------+------------------------+-----------+----------+------------------------------------------------+
+|    Column    |          Type          | Collation | Nullable |                    Default                     |
++--------------+------------------------+-----------+----------+------------------------------------------------+
+| belt_id      | integer                |           | not null | nextval('asteroid_belt_belt_id_seq'::regclass) |
+| name         | character varying(255) |           | not null |                                                |
+| star_id      | integer                |           | not null |                                                |
+| total_mass   | numeric                |           | not null |                                                |
+| is_spherical | boolean                |           | not null |                                                |
++--------------+------------------------+-----------+----------+------------------------------------------------+
+Indexes:
+    "asteroid_belt_pkey" PRIMARY KEY, btree (belt_id)
+    "asteroid_belt_name_key" UNIQUE CONSTRAINT, btree (name)
+Foreign-key constraints:
+    "asteroid_belt_star_id_fkey" FOREIGN KEY (star_id) REFERENCES star(star_id)
+
+universe=> ALTER TABLE asteroid_belt RENAME COLUMN belt_id TO asteroid_belt_id;
+ALTER TABLE
+universe=> 
